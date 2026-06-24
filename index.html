@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suleiman | لوحة التحكم الحماسية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+        
+        :root {
+            --bg1: #0a0014; --bg2: #1a0030; --bg3: #0d0018;
+            --gold: #FFD700; --gold2: #b8960f; --accent: #FFD700; --accent2: #fbbf24;
+            --glow: rgba(255,215,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+            cursor: default;
+        }
+
+        /* ========== مؤثرات الخلفية القوية ========== */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+
+        .floating-orb {
+            position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.3;
+            animation: orbFloat 6s infinite ease-in-out;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(80px, -40px) scale(1.4); }
+            50% { transform: translate(-40px, -80px) scale(0.7); }
+            75% { transform: translate(-80px, 40px) scale(1.2); }
+        }
+
+        .spark {
+            position: absolute; width: 3px; height: 3px; background: var(--accent);
+            border-radius: 50%; animation: sparkle 2s infinite;
+            box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent2);
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* جزيئات الانفجار الحماسية عند النقر */
+        .cyber-burst {
+            position: fixed; width: 6px; height: 6px; background: var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent2);
+            animation: burstParticle 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes burstParticle {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--mx), var(--my)) scale(0); opacity: 0; }
+        }
+
+        /* فلاش قوي عند الشراء */
+        .flash-effect {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 99999; pointer-events: none; opacity: 0;
+        }
+        .flash-active { animation: flashScreen 0.4s ease-out; }
+        @keyframes flashScreen {
+            0% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 1300px; }
+
+        .card {
+            background: rgba(15, 3, 30, 0.92);
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 215, 0, 0.35);
+            border-radius: 28px;
+            padding: 30px 25px;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.15), 0 0 100px rgba(255, 215, 0, 0.08);
+            display: none;
+            animation: cardIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
+        }
+        .card.show { display: block; }
+        .card:hover {
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.25), 0 0 120px rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.9); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        .logo-box {
+            width: 90px; height: 90px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 2px solid var(--accent);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+            box-shadow: 0 0 40px var(--glow);
+            animation: logoGlow 1.5s infinite alternate;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .logo-box:hover { transform: scale(1.15) rotate(8deg); box-shadow: 0 0 60px var(--glow); }
+        @keyframes logoGlow {
+            0% { box-shadow: 0 0 25px var(--glow); transform: scale(1); }
+            100% { box-shadow: 0 0 50px var(--glow); transform: scale(1.05); }
+        }
+        .logo-box i { font-size: 44px; color: var(--accent); filter: drop-shadow(0 0 15px var(--accent)); }
+
+        .main-title { text-align: center; font-size: 32px; font-weight: 900; color: var(--accent); text-shadow: 0 0 25px var(--glow); }
+        .sub-title { text-align: center; color: var(--accent2); font-size: 12px; letter-spacing: 6px; margin-bottom: 22px; }
+
+        .db-bar {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 50px; padding: 10px 20px; text-align: center;
+            color: var(--accent); font-size: 12px; margin-bottom: 22px;
+        }
+        .db-bar.ok { border-color: #22c55e; color: #22c55e; animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(34,197,94,0); }
+            50% { box-shadow: 0 0 20px rgba(34,197,94,0.6); }
+        }
+
+        .err-msg { color: #ef4444; text-align: center; font-size: 13px; min-height: 20px; font-weight: bold; }
+
+        .input-group { position: relative; margin-bottom: 16px; }
+        .input-group i {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--accent); font-size: 17px;
+        }
+        .input-group input {
+            width: 100%; padding: 14px 48px 14px 15px;
+            background: rgba(0,0,0,0.65); border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 50px; color: #fff; font-size: 14px;
+            font-family: 'Cairo', sans-serif; outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px var(--glow);
+            transform: scale(1.01);
+        }
+
+        .btn-gold {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, var(--gold2), var(--accent), var(--gold2));
+            border: none; border-radius: 50px; color: #000;
+            font-size: 16px; font-weight: 800; cursor: pointer;
+            font-family: 'Cairo', sans-serif; margin-bottom: 14px;
+            position: relative; overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .btn-gold:hover {
+            box-shadow: 0 0 40px var(--glow);
+            transform: translateY(-2px);
+        }
+        .btn-gold:active { transform: scale(0.97); }
+        
+        .btn-gold::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .btn-outline {
+            width: 100%; padding: 12px; border-radius: 50px;
+            border: 2px solid var(--accent); background: transparent; color: var(--accent);
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            font-family: 'Cairo', sans-serif; transition: 0.2s;
+        }
+        .btn-outline:hover { background: rgba(255,215,0,0.2); box-shadow: 0 0 20px var(--glow); }
+
+        .footer-note { text-align: center; color: rgba(255,215,0,0.5); font-size: 10px; margin-top: 15px; }
+        .tg-link { color: #22d3ee; font-weight: 700; text-decoration: none; }
+        .tg-link:hover { text-shadow: 0 0 15px #22d3ee; }
+
+        /* لوحة التحكم */
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+            padding: 12px 18px; background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,215,0,0.3); border-radius: 18px;
+        }
+        .top-bar .user-info { display: flex; align-items: center; gap: 10px; }
+        .top-bar .avatar {
+            width: 42px; height: 42px; background: linear-gradient(135deg, var(--gold2), var(--accent));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; color: #000;
+        }
+        .top-bar .details .name { font-weight: 700; color: var(--accent); font-size: 15px; }
+        .top-bar .details .id { font-size: 10px; color: rgba(255,215,0,0.5); }
+        
+        .balance-tag {
+            background: rgba(255,215,0,0.15); border: 2px solid var(--accent);
+            border-radius: 50px; padding: 7px 18px; color: var(--accent); font-weight: 700;
+        }
+        .theme-btn {
+            padding: 8px 14px; border-radius: 50px; border: 1px solid var(--accent);
+            background: rgba(0,0,0,0.5); color: var(--accent); cursor: pointer;
+            font-family: 'Cairo', sans-serif; font-size: 11px; font-weight: 700;
+        }
+
+        .theme-panel {
+            display: none; position: absolute; top: 60px; left: 10px;
+            background: rgba(10,3,25,0.98); border: 2px solid var(--accent);
+            border-radius: 15px; padding: 15px; z-index: 100; width: 260px;
+        }
+        .theme-panel.show { display: block; }
+        .theme-colors { display: flex; flex-wrap: wrap; gap: 8px; }
+        .theme-dot { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .theme-dot.active { border-color: #fff; box-shadow: 0 0 15px currentColor; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-card {
+            background: rgba(0,0,0,0.55); border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 16px; padding: 18px 12px; text-align: center;
+            transition: 0.2s;
+        }
+        .stat-card:hover { border-color: var(--accent); box-shadow: 0 0 25px var(--glow); transform: scale(1.03); }
+        .stat-card i { font-size: 26px; color: var(--accent); margin-bottom: 5px; }
+        .stat-card .num { font-size: 26px; font-weight: 900; color: var(--accent); }
+        .stat-card .lbl { color: rgba(255,215,0,0.55); font-size: 10px; }
+
+        .section-title { color: var(--accent); font-size: 16px; margin-bottom: 10px; }
+
+        .table-wrap { overflow-x: auto; border: 2px solid rgba(255,215,0,0.25); border-radius: 14px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 750px; }
+        th {
+            background: rgba(255,215,0,0.15); padding: 10px; text-align: right;
+            color: var(--accent); font-weight: 700; font-size: 11px;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+        }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #fff; font-size: 12px; }
+        tr:hover td { background: rgba(255,215,0,0.06); }
+        
+        .text-gold { color: var(--accent); font-weight: 700; }
+        .text-purple { color: #c084fc; font-weight: 700; }
+
+        .action-btns { display: flex; gap: 5px; }
+        .btn-xs {
+            padding: 5px 10px; border: none; border-radius: 50px; color: #000;
+            font-weight: 800; cursor: pointer; font-size: 10px; font-family: 'Cairo', sans-serif;
+            background: var(--gold2);
+        }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 22px; }
+        .tool-card {
+            background: rgba(0,0,0,0.55); border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 16px; padding: 18px;
+        }
+        .tool-card h4 { color: var(--accent); margin-bottom: 10px; font-size: 13px; }
+
+        .tool-input, .tool-select {
+            width: 100%; padding: 10px 14px; border-radius: 50px;
+            border: 2px solid rgba(255,215,0,0.3); background: rgba(0,0,0,0.6);
+            color: #fff; font-family: 'Cairo', sans-serif; font-size: 12px;
+            outline: none; margin-bottom: 8px;
+        }
+        .tool-input:focus, .tool-select:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--glow); }
+
+        .btn-sm {
+            padding: 10px 18px; background: linear-gradient(135deg, var(--gold2), var(--accent));
+            border: none; border-radius: 50px; color: #000; font-weight: 800;
+            cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 12px;
+            width: 100%; margin-bottom: 5px;
+        }
+
+        .console-box {
+            background: #000; border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 12px; padding: 14px; height: 130px; overflow-y: auto;
+            font-family: 'Courier New', monospace; color: var(--accent); font-size: 11px;
+            direction: ltr; text-align: left;
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: rgba(20, 5, 40, 0.98); border: 2px solid var(--accent);
+            border-radius: 20px; padding: 30px; text-align: center;
+            max-width: 450px; width: 90%; box-shadow: 0 0 80px var(--glow);
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.4); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .code-display {
+            background: #000; border: 2px dashed var(--accent);
+            border-radius: 15px; padding: 20px; font-size: 26px; font-weight: 900; color: var(--accent);
+            letter-spacing: 2px; margin: 15px 0; font-family: 'Courier New', monospace;
+            text-shadow: 0 0 20px var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .card { padding: 20px 14px; }
+            .main-title { font-size: 24px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="flash-effect" id="flashFx"></div>
+<div class="bg-particles" id="bgParticles"></div>
+
+<div class="container">
+
+    <div class="card show" id="loginPage">
+        <div class="logo-box" id="logoBox"><i class="fas fa-crown"></i></div>
+        <h1 class="main-title">Suleiman</h1>
+        <p class="sub-title">DASHBOARD 2026 ✦</p>
+        <div class="db-bar" id="dbBar"><span>⌛</span> جاري الاتصال بالخادم الحماسي...</div>
+        <div class="err-msg" id="errMsg"></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="userInput" placeholder="الآيدي أو اسم المستخدم"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="passInput" placeholder="كلمة المرور"></div>
+        <button class="btn-gold" id="loginBtn"><i class="fas fa-bolt"></i> دخول الأدمن</button>
+        <button class="btn-outline" id="showRegisterBtn"><i class="fas fa-user-plus"></i> إنشاء حساب جديد</button>
+        <button class="btn-outline" id="buyAccountBtn" style="margin-top:10px;"><i class="fas fa-shopping-cart"></i> شراء حساب فوري</button>
+        <div class="footer-note">للشحن والدعم الفني السريع: <a href="https://t.me/azlo_2" class="tg-link">@azlo_2</a></div>
+    </div>
+
+    <div class="card" id="registerPage">
+        <div class="logo-box"><i class="fas fa-user-plus"></i></div>
+        <h1 class="main-title">إنشاء حساب جديد</h1>
+        <p style="color:#aaa; text-align:center; font-size:12px; margin-bottom:15px;">أدخل بياناتك للتسجيل في نظام Suleiman</p>
+        <div class="err-msg" id="regErrMsg"></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regName" placeholder="اسم المستخدم"></div>
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="البريد الإلكتروني"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regPass" placeholder="كلمة المرور (4 رموز فأكثر)"></div>
+        <button class="btn-gold" id="registerBtn"><i class="fas fa-check-circle"></i> تأكيد وإنشاء الحساب</button>
+        <button class="btn-outline" id="backToLoginBtn">العودة للرئيسية</button>
+    </div>
+
+    <div class="card" id="adminPage" style="position:relative;">
+        <div class="top-bar">
+            <div class="user-info"><div class="avatar" id="adminAvatar">A</div><div class="details"><div class="name" id="adminTopName">-</div><div class="id" id="adminTopId">-</div></div></div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <div class="balance-tag">💰 $<span id="adminTopBalance">0</span></div>
+                <button class="theme-btn" id="themeToggleBtn"><i class="fas fa-palette"></i> مظهر اللوحة</button>
+                <button class="btn-outline" id="logoutBtn" style="width:auto; padding:7px 14px; font-size:11px;"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            </div>
+        </div>
+
+        <div class="theme-panel" id="themePanel">
+            <div class="theme-colors">
+                <div class="theme-dot active" style="background:#FFD700;" data-theme="gold"></div>
+                <div class="theme-dot" style="background:#ef4444;" data-theme="red"></div>
+                <div class="theme-dot" style="background:#3b82f6;" data-theme="blue"></div>
+                <div class="theme-dot" style="background:#8b5cf6;" data-theme="purple"></div>
+                <div class="theme-dot" style="background:#22c55e;" data-theme="green"></div>
+                <div class="theme-dot" style="background:#06b6d4;" data-theme="cyan"></div>
+                <div class="theme-dot" style="background:#f59e0b;" data-theme="orange"></div>
+                <div class="theme-dot" style="background:#ec4899;" data-theme="pink"></div>
+                <div class="theme-dot" style="background:#ffffff;" data-theme="white"></div>
+                <div class="theme-dot" style="background:#78716c;" data-theme="brown"></div>
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:15px;padding:8px;background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.4);border-radius:50px; font-weight: bold;">
+            ⚡ للشحن التلقائي السريع تواصل مع المطور: <a href="https://t.me/azlo_2" class="tg-link">@azlo_2</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-users"></i><div class="num" id="resellerCount">0</div><div class="lbl">عملاء / موزعين</div></div>
+            <div class="stat-card"><i class="fas fa-bolt"></i><div class="num" id="keyCount">0</div><div class="lbl">أكواد متوفرة</div></div>
+            <div class="stat-card"><i class="fas fa-crown"></i><div class="num" id="adminCount">0</div><div class="lbl">أدمن برتبة ملك</div></div>
+            <div class="stat-card"><i class="fas fa-fire"></i><div class="num" id="soldCount">0</div><div class="lbl">عملية بيع ناجحة</div></div>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-server"></i> التحكم بالعملاء والموزعين</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>الآيدي (ID)</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الرصيد المتاح</th><th>أكواد مشتراة</th><th>الرتبة</th><th>التحكم</th></tr></thead>
+                <tbody id="resellerBody"></tbody>
+            </table>
+        </div>
+
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h4><i class="fas fa-plus-circle"></i> ضخ كود جديد بالنظام</h4>
+                <select class="tool-select" id="codeProduct">
+                    <option value="">اختر المنتج</option>
+                    <option>Drip Client ApkMod</option>
+                    <option>HG Cheats ApkMod+Root</option>
+                    <option>PatoTeam Orange ApkMod</option>
+                    <option>PatoTeam Blue ApkMod</option>
+                    <option>PatoTeam Green ApkMod</option>
+                    <option>Prime Hook ApkMod+Root</option>
+                    <option>PROXY DRIP FF MOBILE</option>
+                    <option>BrMods RootDevice</option>
+                    <option>Drip Client RootDevice</option>
+                    <option>Flourite FF IOS</option>
+                    <option>TM Panel</option>
+                    <option>PXT PANEL</option>
+                </select>
+                <input type="text" class="tool-input" id="newCodeInput" placeholder="اكتب الكود هنا">
+                <input type="text" class="tool-input" id="newCodeDuration" placeholder="المدة (مثال: 30 يوم)">
+                <input type="number" class="tool-input" id="newCodePrice" placeholder="سعر المنتج بالدولار $" value="50">
+                <button class="btn-sm" id="addCodeBtn">🚀 ضخ الكود فوراً</button>
+            </div>
+            <div class="tool-card">
+                <h4><i class="fas fa-crown"></i> إدارة رتب الإدارة</h4>
+                <input type="text" class="tool-input" id="setAdminId" placeholder="آيدي العميل">
+                <button class="btn-sm" id="setAdminBtn" style="background:#7c3aed; color:#fff;">👑 ترقية إلى أدمن</button>
+                <button class="btn-sm" id="removeAdminBtn" style="background:#dc2626; color:#fff;">⬇️ تنزيل لعميل عادي</button>
+            </div>
+            <div class="tool-card">
+                <h4><i class="fas fa-paper-plane"></i> شحن رصيد الموزعين</h4>
+                <input type="text" class="tool-input" id="sendIdInput" placeholder="آيدي العميل المستهدف">
+                <input type="number" class="tool-input" id="sendAmountInput" placeholder="المبلغ دولار $">
+                <button class="btn-sm" id="sendBalanceBtn">💵 إرسال شحنة الرصيد</button>
+            </div>
+            <div class="tool-card">
+                <h4><i class="fas fa-shopping-cart"></i> تنفيذ عملية شراء سريعة</h4>
+                <input type="text" class="tool-input" id="buyResellerId" placeholder="آيدي العميل المشتري">
+                <select class="tool-select" id="buyCodeSelect"><option value="">اختر الكود الجاهز</option></select>
+                <button class="btn-sm" id="buyCodeBtn" style="background:#d97706; color:#fff;">⚡ شحن وتسليم الكود</button>
+            </div>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-terminal"></i> سجل العمليات السريع (Live Core)</h3>
+        <div class="console-box" id="consoleBox">
+            <div><span style="color:#888;">[النظام]</span> Suleiman Core Ready.</div>
+        </div>
+    </div>
+
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <h3 style="color:var(--accent); font-size: 22px;"><i class="fas fa-fire"></i> ⚡ تم اقتناص الكود بنجاح!</h3>
+            <div id="modalProduct" style="color:var(--accent2); font-size:16px; margin-top: 10px;"></div>
+            <div class="code-display" id="modalCode">CODE</div>
+            <div id="modalDuration" style="color:rgba(255,215,0,0.8); font-size:14px;"></div>
+            <button class="btn-gold" id="closeModal" style="margin-top: 15px;">🔥 إغلاق وتأكيد</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ==================== مؤثرات الخلفية وجزيئات الانفجار الحماسية ====================
+const bgParticles = document.getElementById('bgParticles');
+
+for (let i = 0; i < 4; i++) {
+    const orb = document.createElement('div');
+    orb.classList.add('floating-orb');
+    orb.style.width = (160 + Math.random() * 180) + 'px';
+    orb.style.height = orb.style.width;
+    orb.style.background = i % 2 === 0 ? 'var(--accent)' : '#8b5cf6';
+    orb.style.left = Math.random() * 80 + '%';
+    orb.style.top = Math.random() * 80 + '%';
+    orb.style.animationDelay = i * 1.5 + 's';
+    bgParticles.appendChild(orb);
+}
+
+for (let i = 0; i < 40; i++) {
+    const spark = document.createElement('div');
+    spark.classList.add('spark');
+    spark.style.left = Math.random() * 100 + '%';
+    spark.style.top = Math.random() * 100 + '%';
+    spark.style.animationDelay = Math.random() * 2 + 's';
+    spark.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    bgParticles.appendChild(spark);
+}
+
+// تأثير انفجار الشرارات القوي والشرس عند الضغط بدلاً من اللمس العادي
+document.addEventListener('click', function(e) {
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    
+    for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.classList.add('cyber-burst');
+        p.style.left = e.clientX + 'px';
+        p.style.top = e.clientY + 'px';
+        
+        // زوايا عشوائية حادة وسريعة للانفجار
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 40 + Math.random() * 90;
+        const mx = Math.cos(angle) * speed + 'px';
+        const my = Math.sin(angle) * speed + 'px';
+        
+        p.style.setProperty('--mx', mx);
+        p.style.setProperty('--my', my);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 500);
+    }
+});
+
+// ==================== نظام الصوت والموسيقى الحماسية جداً جداً ====================
+let bgMusic = null;
+let musicStarted = false;
+
+function startCyberMusic() {
+    if (musicStarted) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function synthRockNote(freq, startTime, duration, type, vol) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = type; // saw or triangle to give massive aggressive sound
+            gain.gain.setValueAtTime(vol, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            osc.start(startTime); osc.stop(startTime + duration);
+        }
+
+        // نغمة بيس ثقيلة وسريعة جداً (Cyberpunk Bassline)
+        const bassLoop = [
+            110, 110, 130, 110, 146, 146, 130, 165,
+            110, 110, 130, 110, 98, 98, 87, 73
+        ];
+        
+        let timeIndex = 0;
+        function playBeat() {
+            let f = bassLoop[timeIndex % bassLoop.length];
+            // ضربات إيقاعية سريعة حماسية جداً (Tempo: 140 BPM)
+            synthRockNote(f, ctx.currentTime, 0.18, 'sawtooth', 0.07);
+            if(timeIndex % 4 === 0) {
+                synthRockNote(f * 2, ctx.currentTime, 0.25, 'triangle', 0.05); // صدى إيقاعي حاد
+            }
+            timeIndex++;
+        }
+
+        bgMusic = setInterval(playBeat, 220); // سرعة فائقة للحماس
+        musicStarted = true;
+    } catch(e) {}
+}
+
+function playEpicWinSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        // نغمات خارقة وقوية تعلن الفوز والنجاح
+        const highNotes = [147, 294, 587, 1174];
+        highNotes.forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(f, now + (i * 0.08));
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.3, now + (i * 0.08));
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.08) + 0.4);
+            osc.start(now + (i * 0.08)); osc.stop(now + (i * 0.08) + 0.4);
+        });
+    } catch(e) {}
+}
+
+document.addEventListener('click', startCyberMusic, { once: true });
+document.addEventListener('touchstart', startCyberMusic, { once: true });
+
+// ==================== نظام الثيمات المدمج ====================
+const themes = {
+    gold: { bg1: '#0a0014', bg2: '#1a0030', bg3: '#0d0018', gold: '#FFD700', gold2: '#b8960f', accent: '#FFD700', accent2: '#fbbf24', glow: 'rgba(255,215,0,0.5)' },
+    red: { bg1: '#1a0000', bg2: '#300000', bg3: '#180000', gold: '#ef4444', gold2: '#dc2626', accent: '#ef4444', accent2: '#fca5a5', glow: 'rgba(239,68,68,0.5)' },
+    blue: { bg1: '#00101a', bg2: '#002030', bg3: '#000d18', gold: '#3b82f6', gold2: '#2563eb', accent: '#3b82f6', accent2: '#93c5fd', glow: 'rgba(59,130,246,0.5)' },
+    purple: { bg1: '#0a0020', bg2: '#1a0040', bg3: '#0d0028', gold: '#8b5cf6', gold2: '#7c3aed', accent: '#8b5cf6', accent2: '#c4b5fd', glow: 'rgba(139,92,246,0.5)' },
+    green: { bg1: '#001a00', bg2: '#003000', bg3: '#001800', gold: '#22c55e', gold2: '#16a34a', accent: '#22c55e', accent2: '#86efac', glow: 'rgba(34,197,94,0.5)' },
+    cyan: { bg1: '#001a1a', bg2: '#003030', bg3: '#001818', gold: '#06b6d4', gold2: '#0891b2', accent: '#06b6d4', accent2: '#67e8f9', glow: 'rgba(6,182,212,0.5)' },
+    orange: { bg1: '#1a0a00', bg2: '#301a00', bg3: '#180d00', gold: '#f59e0b', gold2: '#d97706', accent: '#f59e0b', accent2: '#fcd34d', glow: 'rgba(245,158,11,0.5)' },
+    pink: { bg1: '#1a0010', bg2: '#300020', bg3: '#180018', gold: '#ec4899', gold2: '#db2777', accent: '#ec4899', accent2: '#f9a8d4', glow: 'rgba(236,72,153,0.5)' },
+    white: { bg1: '#111111', bg2: '#222222', bg3: '#111111', gold: '#ffffff', gold2: '#cccccc', accent: '#ffffff', accent2: '#ffffff', glow: 'rgba(255,255,255,0.5)' },
+    brown: { bg1: '#1a1000', bg2: '#302010', bg3: '#181008', gold: '#78716c', gold2: '#57534e', accent: '#a8a29e', accent2: '#d6d3d1', glow: 'rgba(168,162,158,0.5)' }
+};
+
+function applyTheme(name) {
+    const t = themes[name]; if (!t) return;
+    const r = document.documentElement;
+    Object.entries(t).forEach(([k, v]) => r.style.setProperty('--' + k, v));
+    document.body.style.background = `linear-gradient(135deg, ${t.bg1} 0%, ${t.bg2} 50%, ${t.bg3} 100%)`;
+    document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+    const ad = document.querySelector(`.theme-dot[data-theme="${name}"]`); if (ad) ad.classList.add('active');
+    localStorage.setItem('suleiman_theme', name);
+}
+applyTheme(localStorage.getItem('suleiman_theme') || 'gold');
+
+document.getElementById('themeToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('themePanel').classList.toggle('show'); });
+document.addEventListener('click', () => document.getElementById('themePanel').classList.remove('show'));
+document.querySelectorAll('.theme-dot').forEach(d => {
+    d.addEventListener('click', (e) => { e.stopPropagation(); applyTheme(d.dataset.theme); document.getElementById('themePanel').classList.remove('show'); });
+});
+
+// ==================== مصفوفات البيانات وقاعدة البيانات المحلية ====================
+const products = [
+    'Drip Client ApkMod', 'HG Cheats ApkMod+Root', 'PatoTeam Orange ApkMod',
+    'PatoTeam Blue ApkMod', 'PatoTeam Green ApkMod', 'Prime Hook ApkMod+Root',
+    'PROXY DRIP FF MOBILE', 'BrMods RootDevice', 'Drip Client RootDevice',
+    'Flourite FF IOS', 'TM Panel', 'PXT PANEL'
+];
+
+let resellers = [], codes = [], adminIds = [];
+let codeNum = 1, currentId = null;
+
+function generateUniqueId() {
+    let id;
+    do { id = String(Math.floor(1000000000 + Math.random() * 9000000000)); }
+    while (resellers.find(r => r.id === id));
+    return id;
+}
+
+const loginPage = document.getElementById('loginPage');
+const registerPage = document.getElementById('registerPage');
+const adminPage = document.getElementById('adminPage');
+
+function show(p) {
+    [loginPage, registerPage, adminPage].forEach(x => x.classList.remove('show'));
+    p.classList.add('show');
+}
+
+setTimeout(() => {
+    document.getElementById('dbBar').classList.add('ok');
+    document.getElementById('dbBar').innerHTML = '<span>🔥</span> تم الاتصال بالخادم الحماسي بنجاح!';
+}, 600);
+
+// ==================== إنشاء حساب جديد مع إضافة البريد الإلكتروني ====================
+document.getElementById('showRegisterBtn').addEventListener('click', () => {
+    document.getElementById('regErrMsg').textContent = '';
+    show(registerPage);
+});
+document.getElementById('backToLoginBtn').addEventListener('click', () => show(loginPage));
+
+document.getElementById('registerBtn').addEventListener('click', () => {
+    const n = document.getElementById('regName').value.trim();
+    const e = document.getElementById('regEmail').value.trim();
+    const p = document.getElementById('regPass').value.trim();
+    
+    if (!n || !e || !p) { 
+        document.getElementById('regErrMsg').textContent = '⚠️ الرجاء تعبئة جميع الحقول!'; 
+        return; 
+    }
+    if (p.length < 4) { 
+        document.getElementById('regErrMsg').textContent = '⚠️ كلمة المرور ضعيفة! اختر 4 رموز فأكثر.'; 
+        return; 
+    }
+    if (!e.includes('@')) {
+        document.getElementById('regErrMsg').textContent = '⚠️ البريد الإلكتروني غير صحيح!';
+        return;
+    }
+    
+    const id = generateUniqueId();
+    resellers.push({ 
+        id, 
+        name: n, 
+        email: e,
+        balance: 0, 
+        date: new Date().toISOString().split('T')[0], 
+        active: true, 
+        codes: [], 
+        isAdmin: false, 
+        password: p 
+    });
+    
+    alert('🔥 تهانينا الحماسية! تم إنشاء حساب جديد بنجاح.\n📌 الآيدي (ID): ' + id + '\n👤 الاسم: ' + n + '\n📧 البريد: ' + e + '\n⚠️ رتبتك الحالية: عميل عادي.');
+    document.getElementById('regName').value = ''; 
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPass').value = '';
+    show(loginPage);
+});
+
+// ==================== شراء حساب فوري (بدون رصيد ابتدائي) ====================
+document.getElementById('buyAccountBtn').addEventListener('click', () => {
+    const newName = 'user_' + Math.random().toString(36).substring(2, 8);
+    const newEmail = newName + '@temp.com';
+    const newPass = Math.random().toString(36).substring(2, 8);
+    const id = generateUniqueId();
+    resellers.push({ 
+        id, 
+        name: newName, 
+        email: newEmail,
+        balance: 0, 
+        date: new Date().toISOString().split('T')[0], 
+        active: true, 
+        codes: [], 
+        isAdmin: false, 
+        password: newPass 
+    });
+    alert(`🛒 تم شراء حساب بنجاح!\n📌 الآيدي: ${id}\n👤 الاسم: ${newName}\n📧 البريد: ${newEmail}\n🔑 كلمة المرور: ${newPass}\n💰 الرصيد الابتدائي: $0`);
+    addLog(`🛒 شراء حساب جديد: ${newName} (ID: ${id})`);
+});
+
+// ==================== نظام الدخول ====================
+document.getElementById('loginBtn').addEventListener('click', () => {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    const r = resellers.find(x => (x.id === u || x.name === u) && x.password === p);
+    
+    if (r && adminIds.includes(r.id)) { 
+        currentId = r.id; 
+        updateTopBar(); 
+        renderAll(); 
+        show(adminPage); 
+        addLog('👑 دخل الأدمن الحماسي: ' + r.name); 
+    }
+    else if (r) { 
+        alert('❌ الدخول مرفوض! حسابك مسجل كـ (عميل عادي).\nلوحة الأدمن مخصصة للملوك فقط! للترقية تواصل مع المطور: @azlo_2'); 
+    }
+    else { 
+        document.getElementById('errMsg').textContent = '❌ عذراً! بيانات الدخول المدخلة خاطئة تماماً.'; 
+    }
+    document.getElementById('userInput').value = ''; 
+    document.getElementById('passInput').value = '';
+});
+
+// ==================== تسجيل الخروج ====================
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    currentId = null;
+    show(loginPage);
+    addLog('🚪 تم تسجيل الخروج من لوحة التحكم');
+});
+
+function updateTopBar() {
+    const r = resellers.find(x => x.id === currentId); if (!r) return;
+    document.getElementById('adminTopName').textContent = r.name;
+    document.getElementById('adminTopId').textContent = '#' + r.id;
+    document.getElementById('adminTopBalance').textContent = r.balance;
+    document.getElementById('adminAvatar').textContent = r.name.charAt(0).toUpperCase();
+}
+
+function renderAll() {
+    document.getElementById('codeProduct').innerHTML = '<option value="">اختر المنتج</option>' + products.map(p => `<option>${p}</option>`).join('');
+    document.getElementById('buyCodeSelect').innerHTML = '<option value="">اختر الكود</option>' + codes.filter(c => c.status === 'متاح').map(c => `<option value="${c.number}">#${c.number} - ${c.productName} - ${c.duration} ($${c.price})</option>`).join('');
+    document.getElementById('resellerCount').textContent = resellers.length;
+    document.getElementById('keyCount').textContent = codes.filter(c => c.status === 'متاح').length;
+    document.getElementById('adminCount').textContent = adminIds.length;
+    document.getElementById('soldCount').textContent = codes.filter(c => c.status === 'مباع').length;
+    
+    const tb = document.getElementById('resellerBody'); tb.innerHTML = '';
+    if (resellers.length === 0) tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">لا يوجد عملاء مسجلين حالياً بالخادم</td></tr>';
+    else resellers.forEach(r => {
+        const ia = adminIds.includes(r.id);
+        tb.innerHTML += `<tr><td class="text-gold">${r.id}</td><td>${r.name}${ia?' <span class="text-purple">👑</span>':''}</td><td>${r.email || 'لا يوجد'}</td><td class="text-gold">$${r.balance}</td><td>${r.codes.length}</td><td class="${ia?'text-purple':''}">${ia?'أدمن ملكي':'عميل عادي'}</td><td><div class="action-btns"><button class="btn-xs" onclick="viewCodes('${r.id}')">👁 الأكواد</button><button class="btn-xs" style="background:#7c3aed; color:#fff;" onclick="editReseller('${r.id}')">✏️</button><button class="btn-xs" style="background:#dc2626; color:#fff;" onclick="deleteReseller('${r.id}')">🗑</button></div></td></tr>`;
+    });
+}
+
+function addLog(m) {
+    const b = document.getElementById('consoleBox');
+    b.innerHTML += `<div><span style="color:#888;">[${new Date().toLocaleTimeString('ar-SA')}]</span> ${m}</div>`;
+    b.scrollTop = b.scrollHeight;
+}
+
+function viewCodes(id) {
+    const r = resellers.find(x => x.id === id);
+    if (!r || r.codes.length === 0) { alert('📭 هذا العميل لم يقم بأي عمليات شراء للأكواد بعد.'); return; }
+    let m = `📋 أكواد الموزع البطل ${r.name}:\n━━━━━━\n`;
+    r.codes.forEach((c, i) => { m += `📦 المنتج: ${c.productName}\n🔑 الكود: ${c.code}\n⏱️ الصلاحية: ${c.duration}\n`; if (i < r.codes.length - 1) m += '━━━━━━\n'; });
+    alert(m);
+}
+
+function editReseller(id) {
+    const r = resellers.find(x => x.id === id); if (!r) return;
+    const nn = prompt('اكتب الاسم الجديد للعميل فوراً:', r.name);
+    if (nn && nn.trim()) { r.name = nn.trim(); renderAll(); addLog('✏️ تم تعديل بيانات العميل إلى: ' + r.name); }
+}
+
+function deleteReseller(id) {
+    if (!confirm('هل أنت متأكد تماماً من تدمير وحذف هذا الحساب نهائياً؟')) return;
+    const i = resellers.findIndex(x => x.id === id);
+    if (i !== -1) { 
+        const n = resellers[i].name; 
+        resellers.splice(i, 1); 
+        adminIds = adminIds.filter(a => a !== id); 
+        renderAll(); 
+        addLog('🗑 تدمير وحذف العميل: ' + n); 
+    }
+}
+
+// ==================== ضخ الأكواد مع تحديد السعر ====================
+document.getElementById('addCodeBtn').addEventListener('click', () => {
+    const p = document.getElementById('codeProduct').value, 
+          c = document.getElementById('newCodeInput').value.trim(), 
+          d = document.getElementById('newCodeDuration').value.trim(),
+          pr = parseFloat(document.getElementById('newCodePrice').value);
+          
+    if (!p || !c || !d || isNaN(pr) || pr < 0) return alert('⚠️ أدخل تفاصيل الكود كاملة مع السعر بشكل صحيح لحمايتك.');
+    
+    codes.push({ number: String(codeNum).padStart(3, '0'), productName: p, code: c, duration: d, price: pr, status: 'متاح', buyer: '-' });
+    codeNum++; renderAll(); addLog('➕ تم ضخ كود متاح لمنتج: ' + p + ` بسعر ($${pr})`);
+    document.getElementById('newCodeInput').value = ''; document.getElementById('newCodeDuration').value = '';
+});
+
+// ==================== ترقية / تنزيل الرتب ====================
+document.getElementById('setAdminBtn').addEventListener('click', () => {
+    const id = document.getElementById('setAdminId').value.trim();
+    const r = resellers.find(x => x.id === id);
+    if (r && !adminIds.includes(id)) { 
+        adminIds.push(id); 
+        r.isAdmin = true; 
+        alert('👑 مبروك! تمت ترقية ' + r.name + ' لمرتبة أدمن ملكي بنجاح.'); 
+        renderAll(); 
+    }
+    else alert('⚠️ العميل غير موجود أو أنه يمتلك صلاحية أدمن بالفعل.');
+});
+
+document.getElementById('removeAdminBtn').addEventListener('click', () => {
+    const id = document.getElementById('setAdminId').value.trim();
+    if (adminIds.includes(id)) { 
+        adminIds = adminIds.filter(a => a !== id); 
+        const r = resellers.find(x => x.id === id); 
+        if (r) r.isAdmin = false; 
+        alert('⬇️ تم عزل الأدمن وإعادته لعميل عادي.'); 
+        renderAll(); 
+    }
+});
+
+// ==================== عمليات الشحن المالي ====================
+document.getElementById('sendBalanceBtn').addEventListener('click', () => {
+    const id = document.getElementById('sendIdInput').value.trim(), a = parseFloat(document.getElementById('sendAmountInput').value);
+    const r = resellers.find(x => x.id === id);
+    if (r && a > 0) { r.balance += a; addLog('💰 ضخ مالي: تم شحن $' + a + ' إلى حساب البطل ' + r.name); renderAll(); document.getElementById('sendIdInput').value=''; document.getElementById('sendAmountInput').value=''; }
+    else { alert('⚠️ تأكد من صحة الآيدي وقيمة شحنة الرصيد.'); }
+});
+
+// ==================== عملية الشراء والتحقق الصارم من السعر ====================
+document.getElementById('buyCodeBtn').addEventListener('click', () => {
+    const rid = document.getElementById('buyResellerId').value.trim(), cn = document.getElementById('buyCodeSelect').value;
+    const r = resellers.find(x => x.id === rid), c = codes.find(x => x.number === cn);
+    if (!r || !c || c.status !== 'متاح') return alert('⚠️ تأكد من آيدي المشتري واختيار كود نشط ومتاح.');
+    
+    // فحص: إذا كان المشتري أدمن يشتري مجاناً بدون شروط
+    const isBuyerAdmin = adminIds.includes(r.id);
+    
+    if (!isBuyerAdmin) {
+        // الفحص الصارم للعميل العادي والموزع: لو رصيده أقل من سعر المنتج يترفض الشراء فوراً
+        if (r.balance < c.price) {
+            alert(`❌ فشلت العملية: العميل ليس معه سعر المنتج الحالي ($${c.price})، رصيده المتاح ($${r.balance}) غير كافٍ!`);
+            addLog(`⚠️ محاولة شراء فاشلة من العميل ${r.name}: الرصيد لا يكفي لشراء ${c.productName}`);
+            return;
+        }
+        // خصم السعر من رصيد العميل العادي
+        r.balance -= c.price;
+    }
+    
+    // إتمام عملية البيع وتحديث البيانات
+    c.status = 'مباع'; c.buyer = r.name;
+    r.codes.push({ productName: c.productName, code: c.code, duration: c.duration, date: new Date().toISOString().split('T')[0] });
+    
+    document.getElementById('modalProduct').textContent = '📦 اسم المنتج المقتنص: ' + c.productName;
+    document.getElementById('modalCode').textContent = c.code;
+    document.getElementById('modalDuration').textContent = '⏱️ صلاحية الكود: ' + c.duration + ' | 👤 المستلم: ' + r.name;
+    
+    // تفعيل الوميض الضوئي الشرس للفوز
+    const flash = document.getElementById('flashFx');
+    flash.classList.add('flash-active');
+    setTimeout(() => flash.classList.remove('flash-active'), 400);
+    
+    document.getElementById('codeModal').classList.add('show');
+    playEpicWinSound();
+    
+    addLog('🛒 صفقة حماسية ناجحة: اشترى ' + r.name + ' كود ' + c.productName + (isBuyerAdmin ? ' (مجاني للأدمن)' : ` بسعر $${c.price}`));
+    if (r.id === currentId) updateTopBar();
+    renderAll();
+});
+document.getElementById('closeModal').addEventListener('click', () => document.getElementById('codeModal').classList.remove('show'));
+
+// ==================== تهيئة الأدمن الأساسي (mostafa) ====================
+// إضافة حساب mostafa كأدمن أساسي
+if (!resellers.find(r => r.id === '3081913640')) {
+    resellers.unshift({ 
+        id: '3081913640', 
+        name: 'mostafa', 
+        email: 'mostafa@admin.com',
+        balance: 9999, 
+        date: '2026-01-01', 
+        active: true, 
+        codes: [], 
+        isAdmin: true, 
+        password: 'Secure@2026' 
+    });
+}
+if (!adminIds.includes('3081913640')) adminIds.push('3081913640');
+
+// إزالة أي أدمن آخرين غير mostafa
+adminIds = adminIds.filter(id => id === '3081913640');
+
+renderAll();
+</script>
+
+</body>
+</html>
